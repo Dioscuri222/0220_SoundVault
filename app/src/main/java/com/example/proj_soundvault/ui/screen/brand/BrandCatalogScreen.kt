@@ -5,74 +5,144 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.proj_soundvault.data.model.AudioBrand
-import com.example.proj_soundvault.data.remote.MockSessionManager
-import com.example.proj_soundvault.data.remote.UserRole
-import com.example.proj_soundvault.ui.viewmodel.BrandUiState
 import com.example.proj_soundvault.ui.viewmodel.BrandViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BrandCatalogScreen(
-    viewModel: BrandViewModel = viewModel()
+    isAdmin: Boolean = false,
+    userName: String = "",
+    onLogout: () -> Unit = {},
+    brandViewModel: BrandViewModel = viewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-    val currentRole by MockSessionManager.currentRole.collectAsState()
-    var showAddDialog by remember { mutableStateOf(false) }
+    val uiState by brandViewModel.uiState.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    var showFormDialog by remember { mutableStateOf(false) }
+    var editingBrand by remember { mutableStateOf<AudioBrand?>(null) }
+    var deletingBrand by remember { mutableStateOf<AudioBrand?>(null) }
+    var showLogoutDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(uiState.snackbarMessage) {
+        uiState.snackbarMessage?.let { msg ->
+            snackbarHostState.showSnackbar(msg)
+            brandViewModel.clearSnackbar()
+        }
+    }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
-                title = { Text("SoundVault Brands") },
+                title = {
+                    Column {
+                        Text("Katalog Merek Audio", fontWeight = FontWeight.Bold)
+                        Text(
+                            text = "${userName.ifBlank { "Pengguna" }} • ${if (isAdmin) "ADMIN" else "USER"}",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                },
                 actions = {
-                    // Tombol Switch Role (USER <-> ADMIN)
-                    FilterChip(
-                        selected = currentRole == UserRole.ADMIN,
-                        onClick = { MockSessionManager.switchRole() },
-                        label = { Text(if (currentRole == UserRole.ADMIN) "Role: ADMIN" else "Role: USER") }
-                    )
+                    TextButton(onClick = { showLogoutDialog = true }) {
+                        Text("Logout", color = MaterialTheme.colorScheme.error)
+                    }
                 }
             )
         },
         floatingActionButton = {
-            // FAB Tambah hanya muncul untuk ADMIN
-            if (currentRole == UserRole.ADMIN) {
-                FloatingActionButton(onClick = { showAddDialog = true }) {
-                    Icon(Icons.Default.Add, contentDescription = "Tambah Brand")
+            if (isAdmin) {
+                FloatingActionButton(
+                    onClick = {
+                        editingBrand = null
+                        showFormDialog = true
+                    }
+                ) {
+                    Icon(Icons.Default.Add, contentDescription = "Tambah Merek")
                 }
             }
         }
     ) { innerPadding ->
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
+                .padding(horizontal = 16.dp)
         ) {
-            when (val state = uiState) {
-                is BrandUiState.Loading -> CircularProgressIndicator(Modifier.align(Alignment.Center))
-                is BrandUiState.Error -> Text(state.message, Modifier.align(Alignment.Center), color = MaterialTheme.colorScheme.error)
-                is BrandUiState.Success -> {
-                    if (state.brands.isEmpty()) {
-                        Text("Belum ada data brand.", Modifier.align(Alignment.Center))
-                    } else {
-                        LazyColumn(
-                            contentPadding = PaddingValues(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            items(state.brands) { brand ->
-                                BrandCard(
-                                    brand = brand,
-                                    isAdmin = currentRole == UserRole.ADMIN,
-                                    onDelete = { viewModel.deleteBrand(brand.id) }
-                                )
+            OutlinedTextField(
+                value = uiState.searchQuery,
+                onValueChange = { brandViewModel.onSearchQueryChange(it) },
+                placeholder = { Text("Cari nama merek atau negara asal...") },
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Cari") },
+                trailingIcon = {
+                    if (uiState.searchQuery.isNotEmpty()) {
+                        IconButton(onClick = { brandViewModel.onSearchQueryChange("") }) {
+                            Icon(Icons.Default.Close, contentDescription = "Hapus Pencarian")
+                        }
+                    }
+                },
+                singleLine = true,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            )
+
+            when {
+                uiState.isLoading && uiState.brands.isEmpty() -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
+                }
+
+                uiState.errorMessage != null && uiState.brands.isEmpty() -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(
+                                text = uiState.errorMessage!!,
+                                color = MaterialTheme.colorScheme.error
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Button(onClick = { brandViewModel.loadBrands() }) {
+                                Text("Coba Lagi")
                             }
+                        }
+                    }
+                }
+
+                uiState.brands.isEmpty() -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text("Belum ada data merek audio.")
+                    }
+                }
+
+                else -> {
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(10.dp),
+                        contentPadding = PaddingValues(top = 4.dp, bottom = 84.dp)
+                    ) {
+                        items(uiState.brands, key = { it.idBrand }) { brand ->
+                            BrandItemCard(
+                                brand = brand,
+                                isAdmin = isAdmin,
+                                onEdit = {
+                                    editingBrand = brand
+                                    showFormDialog = true
+                                },
+                                onDelete = { deletingBrand = brand }
+                            )
                         }
                     }
                 }
@@ -80,38 +150,123 @@ fun BrandCatalogScreen(
         }
     }
 
-    if (showAddDialog) {
-        AddBrandDialog(
-            onDismiss = { showAddDialog = false },
+    // Dialog Tambah / Edit Brand (Khusus ADMIN)
+    if (showFormDialog && isAdmin) {
+        BrandFormDialog(
+            initialBrand = editingBrand,
+            onDismiss = { showFormDialog = false },
             onConfirm = { name, country, desc ->
-                viewModel.addBrand(name, country, desc)
-                showAddDialog = false
+                if (editingBrand == null) {
+                    brandViewModel.createBrand(name, country, desc)
+                } else {
+                    brandViewModel.updateBrand(editingBrand!!.idBrand, name, country, desc)
+                }
+                showFormDialog = false
+            }
+        )
+    }
+
+    // Dialog Konfirmasi Hapus Brand (Khusus ADMIN)
+    if (deletingBrand != null && isAdmin) {
+        AlertDialog(
+            onDismissRequest = { deletingBrand = null },
+            title = { Text("Hapus Merek Audio") },
+            text = {
+                Text("Yakin ingin menghapus merek '${deletingBrand!!.brandName}'? Tindakan ini tidak dapat dibatalkan.")
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        brandViewModel.deleteBrand(deletingBrand!!.idBrand)
+                        deletingBrand = null
+                    }
+                ) {
+                    Text("Hapus", color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { deletingBrand = null }) {
+                    Text("Batal")
+                }
+            }
+        )
+    }
+
+    // Dialog Konfirmasi Logout (Sesuai Gambar 3.6 SRS)
+    if (showLogoutDialog) {
+        AlertDialog(
+            onDismissRequest = { showLogoutDialog = false },
+            title = { Text("Konfirmasi Logout") },
+            text = { Text("Apakah Anda yakin ingin keluar dari akun SoundVault?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showLogoutDialog = false
+                        onLogout()
+                    }
+                ) {
+                    Text("Ya, Keluar", color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showLogoutDialog = false }) {
+                    Text("Tidak")
+                }
             }
         )
     }
 }
 
 @Composable
-fun BrandCard(brand: AudioBrand, isAdmin: Boolean, onDelete: () -> Unit) {
-    OutlinedCard(modifier = Modifier.fillMaxWidth()) {
+private fun BrandItemCard(
+    brand: AudioBrand,
+    isAdmin: Boolean,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.Top
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(brand.brandName, style = MaterialTheme.typography.titleMedium)
-                Text("Asal: ${brand.countryOrigin}", style = MaterialTheme.typography.bodySmall)
-                if (brand.description.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(brand.description, style = MaterialTheme.typography.bodyMedium)
+                Text(
+                    text = brand.brandName,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = "Negara Asal: ${brand.countryOrigin}",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                if (!brand.description.isNullOrBlank()) {
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = brand.description,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
             }
+
             if (isAdmin) {
-                IconButton(onClick = onDelete) {
-                    Icon(Icons.Default.Delete, contentDescription = "Hapus", tint = MaterialTheme.colorScheme.error)
+                Row {
+                    IconButton(onClick = onEdit) {
+                        Icon(Icons.Default.Edit, contentDescription = "Edit Merek")
+                    }
+                    IconButton(onClick = onDelete) {
+                        Icon(
+                            Icons.Default.Delete,
+                            contentDescription = "Hapus Merek",
+                            tint = MaterialTheme.colorScheme.error
+                        )
+                    }
                 }
             }
         }
@@ -119,30 +274,54 @@ fun BrandCard(brand: AudioBrand, isAdmin: Boolean, onDelete: () -> Unit) {
 }
 
 @Composable
-fun AddBrandDialog(onDismiss: () -> Unit, onConfirm: (String, String, String) -> Unit) {
-    var name by remember { mutableStateOf("") }
-    var country by remember { mutableStateOf("") }
-    var desc by remember { mutableStateOf("") }
+private fun BrandFormDialog(
+    initialBrand: AudioBrand?,
+    onDismiss: () -> Unit,
+    onConfirm: (String, String, String) -> Unit
+) {
+    var brandName by remember { mutableStateOf(initialBrand?.brandName ?: "") }
+    var countryOrigin by remember { mutableStateOf(initialBrand?.countryOrigin ?: "") }
+    var description by remember { mutableStateOf(initialBrand?.description ?: "") }
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Tambah Audio Brand") },
+        title = {
+            Text(if (initialBrand == null) "Tambah Merek Audio" else "Edit Merek Audio")
+        },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Nama Brand") })
-                OutlinedTextField(value = country, onValueChange = { country = it }, label = { Text("Negara Asal") })
-                OutlinedTextField(value = desc, onValueChange = { desc = it }, label = { Text("Deskripsi") })
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                OutlinedTextField(
+                    value = brandName,
+                    onValueChange = { brandName = it },
+                    label = { Text("Nama Merek (contoh: Tangzu)") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = countryOrigin,
+                    onValueChange = { countryOrigin = it },
+                    label = { Text("Negara Asal (contoh: China)") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = description,
+                    onValueChange = { description = it },
+                    label = { Text("Deskripsi Singkat (Opsional)") },
+                    maxLines = 3,
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
         },
         confirmButton = {
-            Button(
-                onClick = { if (name.isNotBlank()) onConfirm(name, country, desc) }
-            ) {
+            Button(onClick = { onConfirm(brandName, countryOrigin, description) }) {
                 Text("Simpan")
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Batal") }
+            TextButton(onClick = onDismiss) {
+                Text("Batal")
+            }
         }
     )
 }

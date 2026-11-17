@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import com.example.proj_soundvault.ui.screen.brand.BrandCatalogScreen
+import com.example.proj_soundvault.navigation.SoundVaultNavGraph
 import com.example.proj_soundvault.ui.theme.Proj_SoundVaultTheme
 
 class MainActivity : ComponentActivity() {
@@ -14,7 +14,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             Proj_SoundVaultTheme {
                 Surface(color = MaterialTheme.colorScheme.background) {
-                    BrandCatalogScreen()
+                    SoundVaultNavGraph()
                 }
             }
         }

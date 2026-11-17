@@ -1,26 +1,97 @@
 package com.example.proj_soundvault.data.repository
 
+import com.example.proj_soundvault.data.model.ApiResponse
 import com.example.proj_soundvault.data.model.AudioBrand
+import com.example.proj_soundvault.data.remote.ApiService
+import com.google.gson.Gson
+import retrofit2.Response
 
-class BrandRepository {
-    // Mock data awal untuk testing UI
-    private val mockBrands = mutableListOf(
-        AudioBrand(1, "Tangzu", "China", "Terkenal dengan IEM Wan'er S.G dan Tang Sancai eartips."),
-        AudioBrand(2, "Moondrop", "China", "IEM populer dengan tuning profil Harman Target."),
-        AudioBrand(3, "FiiO", "China", "Spesialis DAC/AMP portable dan audio gear berkinerja tinggi.")
-    )
+class BrandRepository(private val apiService: ApiService) {
+    private val gson = Gson()
 
-    suspend fun getBrands(): List<AudioBrand> {
-        // Nanti jika API siap: return RetrofitClient.instance.getBrands()
-        return mockBrands
+    suspend fun getBrands(search: String? = null): Result<List<AudioBrand>> {
+        return try {
+            val query = search?.trim()?.takeIf { it.isNotEmpty() }
+            val response = apiService.getBrands(query)
+            val body = response.body()
+            if (response.isSuccessful && body != null && body.success && body.data != null) {
+                Result.success(body.data)
+            } else {
+                Result.failure(Exception(extractErrorMessage(response, "Gagal memuat daftar merek")))
+            }
+        } catch (e: Exception) {
+            Result.failure(Exception("Koneksi gagal: ${e.localizedMessage}"))
+        }
     }
 
-    suspend fun addBrand(brand: AudioBrand) {
-        val newId = (mockBrands.maxOfOrNull { it.id } ?: 0) + 1
-        mockBrands.add(brand.copy(id = newId))
+    suspend fun createBrand(
+        brandName: String,
+        countryOrigin: String,
+        description: String
+    ): Result<AudioBrand> {
+        return try {
+            val payload = mapOf(
+                "brand_name" to brandName.trim(),
+                "country_origin" to countryOrigin.trim(),
+                "description" to description.trim()
+            )
+            val response = apiService.createBrand(payload)
+            val body = response.body()
+            if (response.isSuccessful && body != null && body.success && body.data != null) {
+                Result.success(body.data)
+            } else {
+                Result.failure(Exception(extractErrorMessage(response, "Gagal menambahkan merek")))
+            }
+        } catch (e: Exception) {
+            Result.failure(Exception("Koneksi gagal: ${e.localizedMessage}"))
+        }
     }
 
-    suspend fun deleteBrand(id: Int) {
-        mockBrands.removeAll { it.id == id }
+    suspend fun updateBrand(
+        id: Int,
+        brandName: String,
+        countryOrigin: String,
+        description: String
+    ): Result<AudioBrand> {
+        return try {
+            val payload = mapOf(
+                "brand_name" to brandName.trim(),
+                "country_origin" to countryOrigin.trim(),
+                "description" to description.trim()
+            )
+            val response = apiService.updateBrand(id, payload)
+            val body = response.body()
+            if (response.isSuccessful && body != null && body.success && body.data != null) {
+                Result.success(body.data)
+            } else {
+                Result.failure(Exception(extractErrorMessage(response, "Gagal memperbarui merek")))
+            }
+        } catch (e: Exception) {
+            Result.failure(Exception("Koneksi gagal: ${e.localizedMessage}"))
+        }
+    }
+
+    suspend fun deleteBrand(id: Int): Result<String> {
+        return try {
+            val response = apiService.deleteBrand(id)
+            val body = response.body()
+            if (response.isSuccessful && body != null && body.success) {
+                Result.success(body.message)
+            } else {
+                Result.failure(Exception(extractErrorMessage(response, "Gagal menghapus merek")))
+            }
+        } catch (e: Exception) {
+            Result.failure(Exception("Koneksi gagal: ${e.localizedMessage}"))
+        }
+    }
+
+    private fun extractErrorMessage(response: Response<*>, fallback: String): String {
+        return try {
+            val errorJson = response.errorBody()?.string()
+            val parsed = gson.fromJson(errorJson, ApiResponse::class.java)
+            parsed?.message ?: fallback
+        } catch (_: Exception) {
+            fallback
+        }
     }
 }

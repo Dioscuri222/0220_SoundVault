@@ -54,9 +54,8 @@ object RetrofitClient {
     ) : Interceptor {
         override fun intercept(chain: Interceptor.Chain): Response {
             val original = chain.request()
-            val path = original.url.encodedPath
+            val path = original.url().encodedPath()
 
-            // Jangan sisipkan token lama pada endpoint login, register, atau refresh
             if (path.contains("auth/login") || path.contains("auth/register") || path.contains("auth/refresh")) {
                 return chain.proceed(original)
             }
@@ -75,18 +74,17 @@ object RetrofitClient {
         private val refreshApi: ApiService
     ) : Authenticator {
         override fun authenticate(route: Route?, response: Response): Request? {
-            val path = response.request.url.encodedPath
+            val path = response.request().url().encodedPath()
             if (path.contains("auth/login") || path.contains("auth/refresh") || responseCount(response) >= 2) {
                 return null
             }
 
             synchronized(this) {
                 val currentAccessToken = sessionManager.getAccessToken()
-                val requestToken = response.request.header("Authorization")?.removePrefix("Bearer ")
+                val requestToken = response.request().header("Authorization")?.removePrefix("Bearer ")
 
-                // Jika token sudah diperbarui oleh thread lain, langsung ulangi request dengan token baru
                 if (!currentAccessToken.isNullOrEmpty() && currentAccessToken != requestToken) {
-                    return response.request.newBuilder()
+                    return response.request().newBuilder()
                         .header("Authorization", "Bearer $currentAccessToken")
                         .build()
                 }
@@ -101,7 +99,7 @@ object RetrofitClient {
                     val newAccessToken = refreshRes.body()?.data?.accessToken
                     if (refreshRes.isSuccessful && !newAccessToken.isNullOrEmpty()) {
                         sessionManager.updateAccessToken(newAccessToken)
-                        response.request.newBuilder()
+                        response.request().newBuilder()
                             .header("Authorization", "Bearer $newAccessToken")
                             .build()
                     } else {
@@ -117,10 +115,10 @@ object RetrofitClient {
 
         private fun responseCount(response: Response): Int {
             var count = 1
-            var prior = response.priorResponse
+            var prior = response.priorResponse()
             while (prior != null) {
                 count++
-                prior = prior.priorResponse
+                prior = prior.priorResponse()
             }
             return count
         }
