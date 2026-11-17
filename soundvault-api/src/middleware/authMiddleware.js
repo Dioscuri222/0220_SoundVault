@@ -9,3 +9,17 @@ const verifyToken = (req, res, next) => {
       data: null
     });
   }
+
+  const token = authHeader.split(' ')[1];
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
+    req.user = decoded; // { id_user, email, role }
+    next();
+  } catch (err) {
+    return res.status(401).json({
+      success: false,
+      message: 'Access token tidak valid atau sudah kedaluwarsa',
+      data: null
+    });
+  }
+};
