@@ -23,3 +23,16 @@ const verifyToken = (req, res, next) => {
     });
   }
 };
+
+const requireAdmin = (req, res, next) => {
+  if (!req.user || req.user.role !== 'ADMIN') {
+    return res.status(403).json({
+      success: false,
+      message: 'Akses ditolak: hanya ADMIN yang diizinkan melakukan operasi ini',
+      data: null
+    });
+  }
+  next();
+};
+
+module.exports = { verifyToken, requireAdmin };
