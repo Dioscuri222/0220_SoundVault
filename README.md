@@ -1,7 +1,23 @@
 # Laporan Riwayat Perubahan
 **Proyek:** SoundVault
 
-**Navigasi Mingguan:** [Week 10](#-week-10) | [Week 9](#-week-9)
+**Navigasi:** [SRS Revision History](#-srs-revision-history) | [Week 10](#-week-10) | [Week 9](#-week-9)
+
+---
+
+## 📄 SRS Revision History
+
+Riwayat revisi dokumen **System Requirement Specification (SRS)** proyek SoundVault:
+
+| Date | Version | Description | Author(s) |
+|---|---|---|---|
+| 13/11/2026 | 0.1 | Draft Version Inisialisasi Dokumen SRS | Fasya Tri Nugroho |
+| 14/11/2026 | 0.2 | Penambahan Bab 2 (Overall Description), Entity Relationship Diagram (ERD), dan Relasi Antar Tabel (RAT) | Fasya Tri Nugroho |
+| 15/11/2026 | 0.3 | Penambahan Use Case Diagram, tabel deskripsi Use Case, dan Flow Diagram untuk setiap modul fitur utama pada Bab 3 | Fasya Tri Nugroho |
+| 16/11/2026 | 0.4 | Penyesuaian urutan penomoran Bab 3 serta penambahan spesifikasi lengkap Subbab 3.2 (Autentikasi & Manajemen Sesi), Flow Diagram, dan 4 Activity Diagram 3 Swimlane | Fasya Tri Nugroho |
+| 17/11/2026 | 0.5 | Penambahan spesifikasi lengkap Subbab 3.3 (Manajemen Katalog Merek Audio / AudioBrand), Flow Diagram, dan 4 Activity Diagram 3 Swimlane | Fasya Tri Nugroho |
+| 18/11/2026 | 0.6 | Penambahan spesifikasi lengkap Subbab 3.4 (Manajemen Listing Audio & Pencarian Multi-Filter / ListingItem), Flow Diagram, dan 4 Activity Diagram 3 Swimlane | Fasya Tri Nugroho |
+| 19/11/2026 | 0.7 | Penambahan spesifikasi lengkap Subbab 3.5 (Sistem Penawaran & Negosiasi Harga / TransactionOffer), Flow Diagram, dan 4 Activity Diagram 3 Swimlane | Fasya Tri Nugroho |
 
 ---
 
