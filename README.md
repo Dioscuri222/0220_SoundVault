@@ -17,8 +17,10 @@ Riwayat revisi dokumen **System Requirement Specification (SRS)** proyek SoundVa
 | 16/11/2026 | 0.4 | Penyesuaian urutan penomoran Bab 3 serta penambahan spesifikasi lengkap Subbab 3.2 (Autentikasi & Manajemen Sesi), Flow Diagram, dan 4 Activity Diagram 3 Swimlane | Fasya Tri Nugroho |
 | 17/11/2026 | 0.5 | Penambahan spesifikasi lengkap Subbab 3.3 (Manajemen Katalog Merek Audio / AudioBrand), Flow Diagram, dan 4 Activity Diagram 3 Swimlane | Fasya Tri Nugroho |
 | 18/11/2026 | 0.6 | Penambahan spesifikasi lengkap Subbab 3.4 (Manajemen Listing Audio & Pencarian Multi-Filter / ListingItem), Flow Diagram, dan 4 Activity Diagram 3 Swimlane | Fasya Tri Nugroho |
-| 19/11/2026 | 0.7 | Penambahan spesifikasi lengkap Subbab 3.5 (Sistem Penawaran & Negosiasi Harga / TransactionOffer), Flow Diagram, dan 4 Activity Diagram 3 Swimlane | Fasya Tri Nugroho |
-
+| 19/11/2026 | 0.7 | Penambahan spesifikasi lengkap Subbab 3.5 (Sistem Penawaran & Negosiasi Harga / TransactionOffer), Flow Diagram, dan 4 Activity Diagram 3 Swimlane | Fasya Tri Nugroho | 
+| 20/11/2026 | 0.8 |Penambahan spesifikasi lengkap Subbab 3.6 (Manajemen Wishlist & Ekspor Kwitansi Lokal), Flow Diagram, dan 4 Activity Diagram 3 Swimlane | Fasya Tri Nugroho | 
+| 21/11/2026 | 0.9 |Penambahan spesifikasi lengkap Bab 4 (External Interface Requirements: User, Hardware, Software, dan Communications Interfaces) | Fasya Tri Nugroho | 
+| 22/11/2026 | 1.0 |Penambahan Bab 5 (Other Nonfunctional Requirements), Bab 6 (Other Requirements), dan Appendix A–B (Glossary & Traceability Matrix) - Draft Lengkap SRS | Fasya Tri Nugroho | 
 ---
 
 ## 📌 Week 10
