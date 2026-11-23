@@ -103,3 +103,64 @@ CREATE TABLE IF NOT EXISTS wishlists (
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );
+
+
+-- Data Awal untuk Listing Item 
+INSERT INTO listing_items (
+  seller_id, brand_id, item_name, category,
+  driver_type, connector_type, sound_signature,
+  item_condition, price, description, status
+)
+VALUES
+  (
+    (SELECT id_user FROM users WHERE role = 'USER' ORDER BY id_user ASC LIMIT 1),
+    (SELECT id_brand FROM audio_brands WHERE brand_name ILIKE 'Tangzu' LIMIT 1),
+    'Tangzu Wan''er S.G Jade Edition',
+    'IEM',
+    '1DD',
+    '2-Pin 0.78mm',
+    'Warm',
+    'USED',
+    210000,
+    'Pemakaian 2 bulan, lengkap box, kabel bawaan, dan eartips Tang Sancai.',
+    'AVAILABLE'
+  ),
+  (
+    (SELECT id_user FROM users WHERE role = 'USER' ORDER BY id_user ASC LIMIT 1),
+    (SELECT id_brand FROM audio_brands WHERE brand_name ILIKE 'Moondrop' LIMIT 1),
+    'Moondrop Blessing 3',
+    'IEM',
+    'Hybrid',
+    '2-Pin 0.78mm',
+    'Harman',
+    'USED',
+    3850000,
+    'Konfigurasi 2DD + 4BA mulus tanpa dent, nozzle bersih, lengkap carrying case.',
+    'AVAILABLE'
+  ),
+  (
+    (SELECT id_user FROM users WHERE role = 'USER' ORDER BY id_user ASC LIMIT 1),
+    (SELECT id_brand FROM audio_brands WHERE brand_name ILIKE 'FiiO' LIMIT 1),
+    'FiiO KA13 Portable DAC/Amp',
+    'DAC_AMP',
+    'Dual CS43131',
+    '4.4mm Balanced',
+    'Neutral',
+    'NEW',
+    1150000,
+    'BNIB segel resmi, mendukung mode desktop hingga 550mW.',
+    'AVAILABLE'
+  ),
+  (
+    (SELECT id_user FROM users WHERE role = 'USER' ORDER BY id_user ASC LIMIT 1),
+    (SELECT id_brand FROM audio_brands WHERE brand_name ILIKE 'Moondrop' LIMIT 1),
+    'Moondrop Line K Upgrade Cable',
+    'CABLE',
+    'Silver-Plated OCC',
+    '4.4mm Balanced',
+    'Bright',
+    'USED',
+    320000,
+    'Kabel upgrade ringan tidak microphonic, konektor 2-Pin 0.78mm ke 4.4mm.',
+    'AVAILABLE'
+  );
