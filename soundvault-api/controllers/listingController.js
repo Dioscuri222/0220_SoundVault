@@ -120,3 +120,40 @@ const getAllListings = async (req, res) => {
     });
   }
 };
+
+// 2. GET /api/listings/:id — Detail Lengkap Produk Audio (REQ-17)
+const getListingById = async (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (isNaN(id)) {
+      return res.status(400).json({
+        success: false,
+        message: 'ID produk tidak valid',
+        data: null
+      });
+    }
+
+    const { rows } = await pool.query(`${BASE_LISTING_SELECT} WHERE li.id_item = $1`, [id]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Produk audio tidak ditemukan',
+        data: null
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Detail produk audio berhasil dimuat',
+      data: rows[0]
+    });
+  } catch (error) {
+    console.error('Error getListingById:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Terjadi kesalahan pada server saat memuat detail produk',
+      data: null
+    });
+  }
+};
