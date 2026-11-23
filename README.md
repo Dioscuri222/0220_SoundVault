@@ -1,7 +1,7 @@
 # Laporan Riwayat Perubahan
 **Proyek:** SoundVault
 
-**Navigasi:** [SRS Revision History](#-srs-revision-history) | [Week 10](#-week-10) | [Week 9](#-week-9)
+**Navigasi:** [SRS Revision History](#-srs-revision-history) | [Week 11](#-week-11) | [Arsip Mingguan (Week 10 & Week 9)](#-arsip-mingguan-sebelumnya)
 
 ---
 
@@ -17,13 +17,127 @@ Riwayat revisi dokumen **System Requirement Specification (SRS)** proyek SoundVa
 | 16/11/2026 | 0.4 | Penyesuaian urutan penomoran Bab 3 serta penambahan spesifikasi lengkap Subbab 3.2 (Autentikasi & Manajemen Sesi), Flow Diagram, dan 4 Activity Diagram 3 Swimlane | Fasya Tri Nugroho |
 | 17/11/2026 | 0.5 | Penambahan spesifikasi lengkap Subbab 3.3 (Manajemen Katalog Merek Audio / AudioBrand), Flow Diagram, dan 4 Activity Diagram 3 Swimlane | Fasya Tri Nugroho |
 | 18/11/2026 | 0.6 | Penambahan spesifikasi lengkap Subbab 3.4 (Manajemen Listing Audio & Pencarian Multi-Filter / ListingItem), Flow Diagram, dan 4 Activity Diagram 3 Swimlane | Fasya Tri Nugroho |
-| 19/11/2026 | 0.7 | Penambahan spesifikasi lengkap Subbab 3.5 (Sistem Penawaran & Negosiasi Harga / TransactionOffer), Flow Diagram, dan 4 Activity Diagram 3 Swimlane | Fasya Tri Nugroho | 
-| 20/11/2026 | 0.8 |Penambahan spesifikasi lengkap Subbab 3.6 (Manajemen Wishlist & Ekspor Kwitansi Lokal), Flow Diagram, dan 4 Activity Diagram 3 Swimlane | Fasya Tri Nugroho | 
-| 21/11/2026 | 0.9 |Penambahan spesifikasi lengkap Bab 4 (External Interface Requirements: User, Hardware, Software, dan Communications Interfaces) | Fasya Tri Nugroho | 
-| 22/11/2026 | 1.0 |Penambahan Bab 5 (Other Nonfunctional Requirements), Bab 6 (Other Requirements), dan Appendix A–B (Glossary & Traceability Matrix) - Draft Lengkap SRS | Fasya Tri Nugroho | 
+| 19/11/2026 | 0.7 | Penambahan spesifikasi lengkap Subbab 3.5 (Sistem Penawaran & Negosiasi Harga / TransactionOffer), Flow Diagram, dan 4 Activity Diagram 3 Swimlane | Fasya Tri Nugroho |
+| 20/11/2026 | 0.8 | Penambahan spesifikasi lengkap Subbab 3.6 (Manajemen Wishlist & Ekspor Kwitansi Lokal), Flow Diagram, dan 4 Activity Diagram 3 Swimlane | Fasya Tri Nugroho |
+| 21/11/2026 | 0.9 | Penambahan spesifikasi lengkap Bab 4 (External Interface Requirements: User, Hardware, Software, dan Communications Interfaces) | Fasya Tri Nugroho |
+| 22/11/2026 | 1.0 | Penambahan Bab 5 (Other Nonfunctional Requirements), Bab 6 (Other Requirements), dan Appendix A–B (Glossary & Traceability Matrix) - Draft Lengkap SRS | Fasya Tri Nugroho |
+
 ---
 
-## 📌 Week 10
+## 📌 Week 11
+
+### Ringkasan Eksekutif Week 11
+
+Pada Week 11, pengerjaan proyek **SoundVault** berfokus pada pengembangan modul **Manajemen Listing Audio & Pencarian Multi-Filter (`ListingItem`)** pada sisi backend (`soundvault-api`) serta finalisasi riwayat revisi SRS hingga versi `1.0`:
+1. **Finalisasi Tabel Revisi SRS (`README.md`)**: Pembaruan riwayat dokumen SRS hingga versi `1.0` (Subbab 3.6, Bab 4, Bab 5, Bab 6, serta Appendix A–B).
+2. **Pembangunan `listingController.js` & Pencarian Multi-Filter**:
+   - Penambahan konstanta validasi untuk kategori (`IEM`, `DAC_AMP`, `DAP`, `HEADPHONE`, `TWS`, `CABLE_ACCESSORY`), kondisi barang, dan status ketersediaan.
+   - Pembuatan query SQL listing barang dengan `JOIN` ke tabel `audio_brands` dan `users`.
+   - Implementasi fitur pencarian dan *multi-filter* pada fungsi `getAllListings` serta pengambilan detail produk via `getListingById`.
+   - Implementasi fungsi CRUD (`createListing`, `updateListing`, `deleteListing`) dengan validasi input dan kontrol kepemilikan (*ownership control*).
+3. **Konfigurasi Rute & Integrasi Endpoint Listing (`listingRoutes.js`, `server.js`)**:
+   - Pembuatan endpoint REST API listing dengan proteksi middleware verifikasi token (`verifyToken`) dan pendaftaran rute pada `server.js`.
+4. **Data Awal (*Seed*) Listing Item (`schema.sql`)**:
+   - Penambahan data awal produk *listing item* ke dalam skema database `soundvault-api/src/schema.sql`.
+
+<details>
+<summary><b>📜 Daftar Riwayat Commit — Week 11 (9 Commit)</b></summary>
+
+| No | Hash Commit | Pesan Commit | Tanggal & Waktu |
+|---|---|---|---|
+| 1 | `0518614` | menambah data awal untuk listing item | Mon Nov 23 22:04:46 2026 +0700 |
+| 2 | `7016b02` | Add listingRoutes ke server untuk integrasi endpoint API | Mon Nov 23 22:03:51 2026 +0700 |
+| 3 | `d421d6e` | Add listing routes dengan CRUD operations dan token verification | Mon Nov 23 22:02:55 2026 +0700 |
+| 4 | `b311219` | Add createListing, updateListing, dan deleteListing functions dengan validation dan ownership control | Mon Nov 23 22:00:09 2026 +0700 |
+| 5 | `977aec2` | Add getListingById function untuk mendapatkan detail audio product | Mon Nov 23 21:52:09 2026 +0700 |
+| 6 | `0f682b1` | implementasi fungsi multi-filter untuk list audio dalam getAllListings | Mon Nov 23 21:47:57 2026 +0700 |
+| 7 | `396f379` | Add SQL query untuk listing barang dengan joins dari audio_brands dan users | Mon Nov 23 21:42:04 2026 +0700 |
+| 8 | `7bda50d` | Add listingController dengan validasi constant untuk kategori, kondisi, dan status | Mon Nov 23 21:40:49 2026 +0700 |
+| 9 | `8d353cf` | Update version history in README.md | Mon Nov 23 08:19:24 2026 +0700 |
+
+</details>
+
+<details>
+<summary><b>🔍 Detail Perubahan Per Commit — Week 11</b></summary>
+
+#### 9. Commit `0518614`
+* **Pesan Commit:** `menambah data awal untuk listing item`
+* **Deskripsi Perubahan:** Menambahkan data awal (*seed*) untuk tabel listing item audio di dalam skema SQL database.
+* **File Diubah:**
+  - `soundvault-api/src/schema.sql` (+62, -1)
+
+---
+
+#### 8. Commit `7016b02`
+* **Pesan Commit:** `Add listingRoutes ke server untuk integrasi endpoint API`
+* **Deskripsi Perubahan:** Mendaftarkan rute `listingRoutes` ke dalam `server.js` agar endpoint API listing dapat diakses.
+* **File Diubah:**
+  - `soundvault-api/server.js` (+2)
+
+---
+
+#### 7. Commit `d421d6e`
+* **Pesan Commit:** `Add listing routes dengan CRUD operations dan token verification`
+* **Deskripsi Perubahan:** Menambahkan definisi rute endpoint CRUD untuk modul listing produk audio yang dilengkapi middleware verifikasi token.
+* **File Diubah:**
+  - `soundvault-api/routes/listingRoutes.js` (+20)
+
+---
+
+#### 6. Commit `b311219`
+* **Pesan Commit:** `Add createListing, updateListing, dan deleteListing functions dengan validation dan ownership control`
+* **Deskripsi Perubahan:** Mengimplementasikan fungsi pembuatan, pembaruan, dan penghapusan listing produk audio beserta validasi input dan pengecekan kepemilikan barang (*ownership control*).
+* **File Diubah:**
+  - `soundvault-api/controllers/listingController.js` (+370)
+
+---
+
+#### 5. Commit `977aec2`
+* **Pesan Commit:** `Add getListingById function untuk mendapatkan detail audio product`
+* **Deskripsi Perubahan:** Menambahkan handler `getListingById` pada `listingController.js` untuk mengambil informasi detail satu produk audio berdasarkan ID.
+* **File Diubah:**
+  - `soundvault-api/controllers/listingController.js` (+37)
+
+---
+
+#### 4. Commit `0f682b1`
+* **Pesan Commit:** `implementasi fungsi multi-filter untuk list audio dalam getAllListings`
+* **Deskripsi Perubahan:** Mengimplementasikan dukungan pencarian dan *multi-filter* (berdasarkan kata kunci, merek, kategori, kondisi, rentang harga, dan status) pada fungsi `getAllListings`.
+* **File Diubah:**
+  - `soundvault-api/controllers/listingController.js` (+94, -1)
+
+---
+
+#### 3. Commit `396f379`
+* **Pesan Commit:** `Add SQL query untuk listing barang dengan joins dari audio_brands dan users`
+* **Deskripsi Perubahan:** Menambahkan query SQL dasar untuk mengambil daftar listing barang beserta relasi `JOIN` dari tabel `audio_brands` dan `users`.
+* **File Diubah:**
+  - `soundvault-api/controllers/listingController.js` (+25, -1)
+
+---
+
+#### 2. Commit `7bda50d`
+* **Pesan Commit:** `Add listingController dengan validasi constant untuk kategori, kondisi, dan status`
+* **Deskripsi Perubahan:** Membuat kerangka awal `listingController.js` beserta konstanta validasi untuk kategori perangkat audio, kondisi fisik, dan status listing.
+* **File Diubah:**
+  - `soundvault-api/controllers/listingController.js` (+5)
+
+---
+
+#### 1. Commit `8d353cf`
+* **Pesan Commit:** `Update version history in README.md`
+* **Deskripsi Perubahan:** Memperbarui tabel riwayat revisi dokumen SRS pada `README.md` hingga versi `1.0`.
+* **File Diubah:**
+  - `README.md` (+4, -2)
+
+</details>
+
+---
+
+## 📁 Arsip Mingguan Sebelumnya
+
+<details>
+<summary><b>📌 Week 10 — Backend REST API, Autentikasi JWT & Integrasi Katalog Android (18 Commit)</b></summary>
 
 ### Ringkasan Eksekutif Week 10
 
@@ -34,7 +148,8 @@ Pada Week 10, pengerjaan proyek **SoundVault** berfokus pada pembangunan backend
 4. **Integrasi Autentikasi Android**: Penambahan izin Internet & cleartext traffic (`AndroidManifest.xml`), model autentikasi (`AuthModels.kt`), manajemen sesi lokal (`SessionManager.kt`), konfigurasi `AuthInterceptor` & `TokenAuthenticator` di `RetrofitClient.kt`, serta `AuthRepository` dan `AuthViewModel`.
 5. **UI Autentikasi, Navigasi & Katalog Terintegrasi**: Pembuatan `LoginScreen.kt` dan `RegisterScreen.kt`, pengaturan `SoundVaultNavGraph` (`NavGraph.kt`, `Screen.kt`), serta integrasi `BrandCatalogScreen` dengan backend API (pencarian, pembaruan data, dan dialog konfirmasi).
 
-### 📜 Daftar Riwayat Commit (Week 10)
+<details>
+<summary><b>📜 Daftar Riwayat Commit — Week 10 (18 Commit)</b></summary>
 
 | No | Hash Commit | Pesan Commit | Tanggal & Waktu |
 |---|---|---|---|
@@ -57,10 +172,10 @@ Pada Week 10, pengerjaan proyek **SoundVault** berfokus pada pembangunan backend
 | 17 | `7eedc11` | menambah konfigurasi koneksi database dengan dotenv | Tue Nov 17 13:07:40 2026 +0700 |
 | 18 | `abcba31` | instalasi soundvault-api dengan essential serta dependencies | Tue Nov 17 13:05:48 2026 +0700 |
 
-### 🔍 Detail Perubahan Per Commit (Week 10)
+</details>
 
 <details>
-<summary>Lihat detail 18 commit Week 10</summary>
+<summary><b>🔍 Detail Perubahan Per Commit — Week 10</b></summary>
 
 #### 18. Commit `3c4692a`
 * **Pesan Commit:** `Menghubungkan fitur katalog merek audio dengan API backend, serta menambahkan fitur pencarian, pembaruan data, dan dialog konfirmasi`
@@ -222,9 +337,10 @@ Pada Week 10, pengerjaan proyek **SoundVault** berfokus pada pembangunan backend
 
 </details>
 
----
+</details>
 
-## 📌 Week 9
+<details>
+<summary><b>📌 Week 9 — Inisialisasi Proyek Android, Arsitektur MVVM & UI Katalog Awal (8 Commit)</b></summary>
 
 ### Ringkasan Eksekutif Week 9
 
@@ -240,7 +356,8 @@ Pada Week 9, pengerjaan proyek **SoundVault** berfokus pada:
 4. Penyesuaian `MainActivity` untuk menampilkan halaman katalog brand.
 5. Pembaruan `compileSdk` ke versi 37.
 
-### 📜 Daftar Riwayat Commit (Week 9)
+<details>
+<summary><b>📜 Daftar Riwayat Commit — Week 9 (8 Commit)</b></summary>
 
 | No | Hash Commit | Pesan Commit | Tanggal & Waktu |
 |---|---|---|---|
@@ -253,10 +370,10 @@ Pada Week 9, pengerjaan proyek **SoundVault** berfokus pada:
 | 7 | `aa1198e` | Menambahkan dependensi Navigation dan Retrofit serta file navigasi awal | Mon Nov 9 14:51:01 2026 +0700 |
 | 8 | `5955072` | Initial commit | Mon Nov 9 14:43:24 2026 +0700 |
 
-### 🔍 Detail Perubahan Per Commit (Week 9)
+</details>
 
 <details>
-<summary>Lihat detail 8 commit Week 9</summary>
+<summary><b>🔍 Detail Perubahan Per Commit — Week 9</b></summary>
 
 #### 8. Commit `d23ed2f`
 * **Pesan Commit:** `Memperbarui compileSdk ke versi 37`
@@ -335,5 +452,7 @@ Pada Week 9, pengerjaan proyek **SoundVault** berfokus pada:
 * **Deskripsi Perubahan:** Inisialisasi awal proyek Android Studio (SoundVault) dengan struktur Jetpack Compose bawaan.
 * **File Diubah:**
   - 48 file awal (skrip Gradle, AndroidManifest, MainActivity awal, Theme, Drawable, Mipmap resources, dll).
+
+</details>
 
 </details>
