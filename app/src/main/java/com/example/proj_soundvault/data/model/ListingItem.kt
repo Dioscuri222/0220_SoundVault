@@ -77,3 +77,65 @@ data class ListingItem(
         else -> category
     }
 }
+
+data class ListingRequest(
+    @SerializedName("brand_id")
+    val brandId: Int,
+
+    @SerializedName("item_name")
+    val itemName: String,
+
+    @SerializedName("category")
+    val category: String,
+
+    @SerializedName("driver_type")
+    val driverType: String,
+
+    @SerializedName("connector_type")
+    val connectorType: String,
+
+    @SerializedName("sound_signature")
+    val soundSignature: String,
+
+    @SerializedName("item_condition")
+    val itemCondition: String,
+
+    @SerializedName("price")
+    val price: Double,
+
+    @SerializedName("description")
+    val description: String? = null
+)
+
+data class ListingFilter(
+    val search: String = "",
+    val category: String? = null,
+    val brandId: Int? = null,
+    val driverType: String? = null,
+    val connectorType: String? = null,
+    val soundSignature: String? = null,
+    val itemCondition: String? = null,
+    val status: String? = null
+) {
+    fun activeFilterCount(): Int {
+        var count = 0
+        if (!category.isNullOrBlank()) count++
+        if (brandId != null) count++
+        if (!driverType.isNullOrBlank()) count++
+        if (!connectorType.isNullOrBlank()) count++
+        if (!soundSignature.isNullOrBlank()) count++
+        if (!itemCondition.isNullOrBlank()) count++
+        if (!status.isNullOrBlank()) count++
+        return count
+    }
+
+    fun hasActiveFilters(): Boolean = activeFilterCount() > 0
+}
+
+object ListingConstants {
+    val CATEGORIES = listOf("IEM", "DAC_AMP", "CABLE", "ACCESSORY")
+    val CONDITIONS = listOf("NEW", "USED")
+    val DRIVER_SUGGESTIONS = listOf("1DD", "Multi-DD", "BA", "Hybrid", "Planar", "Tribrid")
+    val CONNECTOR_SUGGESTIONS = listOf("2-Pin 0.78mm", "MMCX", "QDC", "3.5mm", "4.4mm Balanced", "USB-C")
+    val SIGNATURE_SUGGESTIONS = listOf("Harman", "Warm", "Neutral", "V-Shaped", "Bright", "Basshead")
+}
