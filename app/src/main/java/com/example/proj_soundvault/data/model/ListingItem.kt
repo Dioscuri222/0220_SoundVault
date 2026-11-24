@@ -52,4 +52,28 @@ data class ListingItem(
 
     @SerializedName("created_at")
     val createdAt: String? = null
-) 
+) {
+    fun priceAsDouble(): Double = price.toDoubleOrNull() ?: 0.0
+
+    fun formattedPrice(): String {
+        val formatter = NumberFormat.getNumberInstance(Locale("in", "ID")).apply {
+            maximumFractionDigits = 0
+            minimumFractionDigits = 0
+        }
+        return "Rp ${formatter.format(priceAsDouble().toLong())}"
+    }
+
+    fun formattedCondition(): String = when (itemCondition.uppercase()) {
+        "NEW" -> "Baru (NEW)"
+        "USED" -> "Bekas (USED)"
+        else -> itemCondition
+    }
+
+    fun formattedCategory(): String = when (category.uppercase()) {
+        "IEM" -> "IEM"
+        "DAC_AMP" -> "DAC / Amp"
+        "CABLE" -> "Kabel Audio"
+        "ACCESSORY" -> "Aksesori"
+        else -> category
+    }
+}
