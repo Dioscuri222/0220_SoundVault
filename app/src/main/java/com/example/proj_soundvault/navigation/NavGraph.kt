@@ -109,7 +109,7 @@ fun SoundVaultNavGraph(
             ItemDetailScreen(
                 itemId = itemId,
                 // TODO CEK: sesuaikan nama field ID user di sessionState (misal: session.userId atau session.idUser)
-                currentUserId = session.userId,
+                currentUserId = session.idUser,
                 currentUserRole = if (session.isAdmin) "ADMIN" else "USER",
                 listingViewModel = listingViewModel,
                 onNavigateBack = { navController.popBackStack() },
