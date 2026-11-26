@@ -28,7 +28,7 @@ Riwayat revisi dokumen **System Requirement Specification (SRS)** proyek SoundVa
 
 ### Ringkasan Eksekutif Week 11
 
-Pada Week 11, pengerjaan proyek **SoundVault** berfokus pada pengembangan modul **Manajemen Listing Audio & Pencarian Multi-Filter (`ListingItem`)** pada sisi backend (`soundvault-api`) serta finalisasi riwayat revisi SRS hingga versi `1.0`:
+Pada Week 11, pengerjaan proyek **SoundVault** berfokus pada pengembangan modul **Manajemen Listing Audio & Pencarian Multi-Filter (`ListingItem`)** pada sisi backend (`soundvault-api`) maupun frontend Android, serta finalisasi riwayat revisi SRS hingga versi `1.0`:
 1. **Finalisasi Tabel Revisi SRS (`README.md`)**: Pembaruan riwayat dokumen SRS hingga versi `1.0` (Subbab 3.6, Bab 4, Bab 5, Bab 6, serta Appendix A–B).
 2. **Pembangunan `listingController.js` & Pencarian Multi-Filter**:
    - Penambahan konstanta validasi untuk kategori (`IEM`, `DAC_AMP`, `DAP`, `HEADPHONE`, `TWS`, `CABLE_ACCESSORY`), kondisi barang, dan status ketersediaan.
@@ -36,29 +36,127 @@ Pada Week 11, pengerjaan proyek **SoundVault** berfokus pada pengembangan modul 
    - Implementasi fitur pencarian dan *multi-filter* pada fungsi `getAllListings` serta pengambilan detail produk via `getListingById`.
    - Implementasi fungsi CRUD (`createListing`, `updateListing`, `deleteListing`) dengan validasi input dan kontrol kepemilikan (*ownership control*).
 3. **Konfigurasi Rute & Integrasi Endpoint Listing (`listingRoutes.js`, `server.js`)**:
-   - Pembuatan endpoint REST API listing dengan proteksi middleware verifikasi token (`verifyToken`) dan pendaftaran rute pada `server.js`.
+   - Pembuatan endpoint REST API listing dengan proteksi middleware verifikasi token (`verifyToken`), pendaftaran rute pada `server.js`, serta perapihan struktur folder ke `src/`.
 4. **Data Awal (*Seed*) Listing Item (`schema.sql`)**:
    - Penambahan data awal produk *listing item* ke dalam skema database `soundvault-api/src/schema.sql`.
+5. **Integrasi Fitur Listing Produk Audio pada Aplikasi Android**:
+   - Pembuatan model `ListingItem.kt` beserta helper format, `ListingRequest`, `ListingFilter`, dan `ListingConstants`.
+   - Penambahan endpoint listing di `ApiService.kt`, `ListingRepository.kt`, dan `ListingViewModel.kt`.
+   - Pembuatan antarmuka `HomeKatalogScreen.kt`, `ItemDetailScreen.kt`, `CreateEditListingScreen.kt`, serta pembaruan navigasi dan `currentUserId` pada `NavGraph.kt`.
 
 <details>
-<summary><b>📜 Daftar Riwayat Commit — Week 11 (9 Commit)</b></summary>
+<summary><b>📜 Daftar Riwayat Commit — Week 11 (19 Commit)</b></summary>
 
 | No | Hash Commit | Pesan Commit | Tanggal & Waktu |
 |---|---|---|---|
-| 1 | `0518614` | menambah data awal untuk listing item | Mon Nov 23 22:04:46 2026 +0700 |
-| 2 | `7016b02` | Add listingRoutes ke server untuk integrasi endpoint API | Mon Nov 23 22:03:51 2026 +0700 |
-| 3 | `d421d6e` | Add listing routes dengan CRUD operations dan token verification | Mon Nov 23 22:02:55 2026 +0700 |
-| 4 | `b311219` | Add createListing, updateListing, dan deleteListing functions dengan validation dan ownership control | Mon Nov 23 22:00:09 2026 +0700 |
-| 5 | `977aec2` | Add getListingById function untuk mendapatkan detail audio product | Mon Nov 23 21:52:09 2026 +0700 |
-| 6 | `0f682b1` | implementasi fungsi multi-filter untuk list audio dalam getAllListings | Mon Nov 23 21:47:57 2026 +0700 |
-| 7 | `396f379` | Add SQL query untuk listing barang dengan joins dari audio_brands dan users | Mon Nov 23 21:42:04 2026 +0700 |
-| 8 | `7bda50d` | Add listingController dengan validasi constant untuk kategori, kondisi, dan status | Mon Nov 23 21:40:49 2026 +0700 |
-| 9 | `8d353cf` | Update version history in README.md | Mon Nov 23 08:19:24 2026 +0700 |
+| 1 | `bee92ca` | Menyesuaikan pemanggilan `currentUserId` menggunakan `session.idUser` pada `NavGraph` | Wed Nov 25 01:16:30 2026 +0700 |
+| 2 | `037b703` | Menambahkan `CreateEditListingScreen` dan rute navigasi listing audio | Wed Nov 25 01:13:15 2026 +0700 |
+| 3 | `c3a4462` | Menambahkan tampilan Home Catalog dan Item Detail untuk listing produk audio | Wed Nov 25 01:02:54 2026 +0700 |
+| 4 | `eb7f2a0` | Menambahkan `ListingViewModel` untuk manajemen state dan CRUD listing audio | Wed Nov 25 00:58:21 2026 +0700 |
+| 5 | `19a88f7` | Menambahkan `ListingRepository` untuk manajemen data listing | Wed Nov 25 00:53:43 2026 +0700 |
+| 6 | `7eaa9c7` | Menambahkan endpoint API untuk `ListingItem` pada `ApiService` | Wed Nov 25 00:51:00 2026 +0700 |
+| 7 | `682ddda` | Menambahkan `ListingRequest`, `ListingFilter`, dan `ListingConstants` pada `ListingItem` | Wed Nov 25 00:49:33 2026 +0700 |
+| 8 | `0d29895` | Menambahkan fungsi helper format pada model `ListingItem` | Wed Nov 25 00:48:42 2026 +0700 |
+| 9 | `3faed46` | Menambahkan data model `ListingItem` | Wed Nov 25 00:48:20 2026 +0700 |
+| 10 | `ac77f07` | memindahkan ke folder src | Mon Nov 23 22:39:24 2026 +0700 |
+| 11 | `0518614` | menambah data awal untuk listing item | Mon Nov 23 22:04:46 2026 +0700 |
+| 12 | `7016b02` | Add listingRoutes ke server untuk integrasi endpoint API | Mon Nov 23 22:03:51 2026 +0700 |
+| 13 | `d421d6e` | Add listing routes dengan CRUD operations dan token verification | Mon Nov 23 22:02:55 2026 +0700 |
+| 14 | `b311219` | Add createListing, updateListing, dan deleteListing functions dengan validation dan ownership control | Mon Nov 23 22:00:09 2026 +0700 |
+| 15 | `977aec2` | Add getListingById function untuk mendapatkan detail audio product | Mon Nov 23 21:52:09 2026 +0700 |
+| 16 | `0f682b1` | implementasi fungsi multi-filter untuk list audio dalam getAllListings | Mon Nov 23 21:47:57 2026 +0700 |
+| 17 | `396f379` | Add SQL query untuk listing barang dengan joins dari audio_brands dan users | Mon Nov 23 21:42:04 2026 +0700 |
+| 18 | `7bda50d` | Add listingController dengan validasi constant untuk kategori, kondisi, dan status | Mon Nov 23 21:40:49 2026 +0700 |
+| 19 | `8d353cf` | Update version history in README.md | Mon Nov 23 08:19:24 2026 +0700 |
 
 </details>
 
 <details>
 <summary><b>🔍 Detail Perubahan Per Commit — Week 11</b></summary>
+
+#### 19. Commit `bee92ca`
+* **Pesan Commit:** `Menyesuaikan pemanggilan currentUserId menggunakan session.idUser pada NavGraph`
+* **Deskripsi Perubahan:** Menyesuaikan parameter `currentUserId` agar mengambil ID pengguna aktif dari `session.idUser` pada `NavGraph.kt`.
+* **File Diubah:**
+  - `app/src/main/java/com/example/proj_soundvault/navigation/NavGraph.kt` (+1, -1)
+
+---
+
+#### 18. Commit `037b703`
+* **Pesan Commit:** `Menambahkan CreateEditListingScreen dan rute navigasi listing audio`
+* **Deskripsi Perubahan:** Menambahkan layar formulir tambah/ubah listing produk audio (`CreateEditListingScreen.kt`) dan mendaftarkan rute navigasi listing audio pada `NavGraph.kt`.
+* **File Diubah:**
+  - `app/src/main/java/com/example/proj_soundvault/navigation/NavGraph.kt` (+82, -3)
+  - `app/src/main/java/com/example/proj_soundvault/ui/screen/CreateEditListingScreen.kt` (+317)
+
+---
+
+#### 17. Commit `c3a4462`
+* **Pesan Commit:** `Menambahkan tampilan Home Catalog dan Item Detail untuk listing produk audio`
+* **Deskripsi Perubahan:** Mengimplementasikan layar katalog utama (`HomeKatalogScreen.kt`) dan layar detail produk (`ItemDetailScreen.kt`) untuk menampilkan daftar dan rincian listing audio.
+* **File Diubah:**
+  - `app/src/main/java/com/example/proj_soundvault/ui/screen/HomeKatalogScreen.kt` (+498)
+  - `app/src/main/java/com/example/proj_soundvault/ui/screen/ItemDetailScreen.kt` (+294)
+
+---
+
+#### 16. Commit `eb7f2a0`
+* **Pesan Commit:** `Menambahkan ListingViewModel untuk manajemen state dan CRUD listing audio`
+* **Deskripsi Perubahan:** Menambahkan `ListingViewModel.kt` untuk mengelola UI state, pencarian/filter, serta operasi CRUD listing produk audio.
+* **File Diubah:**
+  - `app/src/main/java/com/example/proj_soundvault/ui/viewmodel/ListingViewModel.kt` (+232)
+
+---
+
+#### 15. Commit `19a88f7`
+* **Pesan Commit:** `Menambahkan ListingRepository untuk manajemen data listing`
+* **Deskripsi Perubahan:** Mengimplementasikan `ListingRepository.kt` sebagai penghubung antara `ApiService` dan `ListingViewModel`.
+* **File Diubah:**
+  - `app/src/main/java/com/example/proj_soundvault/data/repository/ListingRepository.kt` (+96)
+
+---
+
+#### 14. Commit `7eaa9c7`
+* **Pesan Commit:** `Menambahkan endpoint API untuk ListingItem pada ApiService`
+* **Deskripsi Perubahan:** Menambahkan definisi endpoint REST API untuk operasi CRUD dan filter `ListingItem` pada `ApiService.kt`.
+* **File Diubah:**
+  - `app/src/main/java/com/example/proj_soundvault/data/remote/ApiService.kt` (+36)
+
+---
+
+#### 13. Commit `682ddda`
+* **Pesan Commit:** `Menambahkan ListingRequest, ListingFilter, dan ListingConstants pada ListingItem`
+* **Deskripsi Perubahan:** Menambahkan data class `ListingRequest`, `ListingFilter`, serta konstanta `ListingConstants` pada `ListingItem.kt`.
+* **File Diubah:**
+  - `app/src/main/java/com/example/proj_soundvault/data/model/ListingItem.kt` (+62)
+
+---
+
+#### 12. Commit `0d29895`
+* **Pesan Commit:** `Menambahkan fungsi helper format pada model ListingItem`
+* **Deskripsi Perubahan:** Menambahkan fungsi helper pemformatan data (seperti harga/label) pada model `ListingItem.kt`.
+* **File Diubah:**
+  - `app/src/main/java/com/example/proj_soundvault/data/model/ListingItem.kt` (+25, -1)
+
+---
+
+#### 11. Commit `3faed46`
+* **Pesan Commit:** `Menambahkan data model ListingItem`
+* **Deskripsi Perubahan:** Membuat data class `ListingItem` sebagai representasi entitas listing produk audio di aplikasi Android.
+* **File Diubah:**
+  - `app/src/main/java/com/example/proj_soundvault/data/model/ListingItem.kt` (+55)
+
+---
+
+#### 10. Commit `ac77f07`
+* **Pesan Commit:** `memindahkan ke folder src`
+* **Deskripsi Perubahan:** Memindahkan `listingController.js` dan `listingRoutes.js` ke dalam direktori `soundvault-api/src/` serta menyesuaikan path import pada `server.js`.
+* **File Diubah:**
+  - `soundvault-api/server.js` (+1, -1)
+  - `soundvault-api/src/controllers/listingController.js` (dipindahkan dari `controllers/`)
+  - `soundvault-api/src/routes/listingRoutes.js` (dipindahkan dari `routes/`)
+
+---
 
 #### 9. Commit `0518614`
 * **Pesan Commit:** `menambah data awal untuk listing item`
